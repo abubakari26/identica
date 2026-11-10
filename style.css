@@ -1,0 +1,40 @@
+/* Identica: small additions on top of Tailwind. */
+
+html { -webkit-text-size-adjust: 100%; }
+body { overscroll-behavior-y: none; }
+
+/* Form fields shared by every select and text input */
+.field {
+  display: block;
+  width: 100%;
+  margin-top: 0.25rem;
+  padding: 0.7rem 0.75rem;
+  font: inherit;
+  font-size: 1rem;           /* 16px stops iOS zooming into the field */
+  color: #0B3C49;
+  background: #fff;
+  border: 1.5px solid #C4D8D4;
+  border-radius: 0.5rem;
+}
+.field:focus { outline: none; border-color: #146C78; }
+
+/* Visible keyboard focus everywhere */
+button:focus-visible, .field:focus-visible, a:focus-visible {
+  outline: 3px solid #D9A404;
+  outline-offset: 2px;
+}
+
+button { touch-action: manipulation; }
+button:disabled { cursor: not-allowed; }
+
+/* Progress bar shown while the model runs */
+.busy { transform-origin: left; animation: sweep 1.2s ease-in-out infinite; }
+@keyframes sweep {
+  0%   { transform: scaleX(0.05); }
+  60%  { transform: scaleX(1); }
+  100% { transform: scaleX(1); opacity: 0.3; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .busy { animation: none; transform: scaleX(1); }
+}
