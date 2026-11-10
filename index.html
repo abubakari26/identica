@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Identica: fish identification for Ghana</title>
+  <meta name="description" content="Identify fish from a photo, record morphology, and teach the app from your own corrections.">
+  <meta name="theme-color" content="#0B3C49">
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%90%9F%3C/text%3E%3C/svg%3E">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=Source+Serif+4:ital,wght@0,600;1,400;1,600&display=swap" rel="stylesheet">
+
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            ink: '#0B3C49',
+            lagoon: '#146C78',
+            foam: '#EAF3F1',
+            mist: '#C4D8D4',
+            gold: '#D9A404',
+            laterite: '#B5432A'
+          },
+          fontFamily: {
+            sans: ['"IBM Plex Sans"', 'system-ui', 'sans-serif'],
+            serif: ['"Source Serif 4"', 'Georgia', 'serif']
+          }
+        }
+      }
+    };
+  </script>
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body class="bg-foam text-ink font-sans antialiased min-h-screen">
+  <div class="mx-auto max-w-md px-4 pb-16" style="padding-top: max(1rem, env(safe-area-inset-top));">
+
+    <!-- Header -->
+    <header class="flex items-start justify-between gap-3 py-3">
+      <div>
+        <h1 class="font-serif text-3xl font-semibold leading-none">Identica</h1>
+        <p class="mt-1 text-sm text-ink/75">Identify Ghana's fish from a photo.</p>
+      </div>
+      <button id="installBtn" type="button" hidden
+        class="rounded-full border border-lagoon px-3 py-1.5 text-sm font-medium text-lagoon">
+        Install app
+      </button>
+    </header>
+
+    <!-- Specimen frame -->
+    <section aria-label="Specimen photo" class="mt-2">
+      <div id="frame" class="relative overflow-hidden rounded-lg border-2 border-dashed border-lagoon bg-white" style="aspect-ratio: 4 / 3;">
+        <div id="placeholder" class="absolute inset-0 flex flex-col items-center justify-center gap-3 p-6 text-center">
+          <svg viewBox="0 0 220 90" class="w-48 text-lagoon/50" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linejoin="round" aria-hidden="true">
+            <path d="M12 45 C40 12, 110 8, 158 36 L205 14 L196 45 L205 76 L158 54 C110 82, 40 78, 12 45 Z"/>
+            <circle cx="46" cy="40" r="4" fill="currentColor"/>
+            <path d="M70 30 C78 45, 78 45, 70 60" stroke-width="2"/>
+          </svg>
+          <p class="max-w-[16rem] text-sm text-ink/75">Lay the fish side-on on a plain, light surface with the whole body in frame.</p>
+        </div>
+        <canvas id="preview" class="hidden h-full w-full object-contain" aria-label="Photo of the fish"></canvas>
+        <div id="busy" class="busy absolute inset-x-0 bottom-0 hidden h-1.5 bg-gold" aria-hidden="true"></div>
+      </div>
+
+      <div class="mt-3 grid grid-cols-2 gap-3">
+        <!-- Live camera (rear camera on phones) -->
+        <input id="inputCamera" type="file" accept="image/*" capture="environment" class="sr-only">
+        <button id="btnCamera" type="button"
+          class="rounded-lg bg-lagoon px-4 py-3.5 text-base font-semibold text-white active:bg-ink">
+          Take photo
+        </button>
+
+        <!-- Existing picture from gallery -->
+        <input id="inputGallery" type="file" accept="image/*" class="sr-only">
+        <button id="btnGallery" type="button"
+          class="rounded-lg border-2 border-lagoon bg-white px-4 py-3.5 text-base font-semibold text-lagoon active:bg-mist">
+          Choose from gallery
+        </button>
+      </div>
+
+      <p id="status" role="status" aria-live="polite" class="mt-3 min-h-[1.25rem] text-sm text-ink/80"></p>
+    </section>
+
+    <!-- Result -->
+    <section id="resultCard" hidden aria-labelledby="resultTitle" class="mt-4 rounded-lg bg-white p-4 shadow-sm">
+      <h2 id="resultTitle" class="text-sm font-semibold text-ink/70">Best match</h2>
+      <p id="resCommon" class="mt-1 font-serif text-2xl font-semibold leading-tight"></p>
+      <p id="resSci" class="font-serif text-lg italic text-lagoon"></p>
+
+      <div class="mt-3" id="confWrap">
+        <div class="flex items-baseline justify-between text-sm">
+          <span id="confLabel" class="font-medium"></span>
+          <span id="confPct" class="tabular-nums text-ink/70"></span>
+        </div>
+        <div class="mt-1 h-2 overflow-hidden rounded-full bg-mist">
+          <div id="confBar" class="h-full rounded-full bg-lagoon" style="width:0%"></div>
+        </div>
+      </div>
+
+      <p id="resNote" class="mt-3 text-sm text-ink/80"></p>
+
+      <div id="altWrap" hidden class="mt-3 border-t border-mist pt-3">
+        <h3 class="text-sm font-semibold text-ink/70">Other possibilities</h3>
+        <ul id="altList" class="mt-1 space-y-1 text-sm"></ul>
+      </div>
+    </section>
+
+    <!-- Morphology -->
+    <section id="traitCard" hidden aria-labelledby="traitTitle" class="mt-4 rounded-lg bg-white p-4 shadow-sm">
+      <h2 id="traitTitle" class="font-serif text-xl font-semibold">Body features</h2>
+      <p id="traitHint" class="mt-1 text-sm text-ink/75"></p>
+
+      <div class="mt-3 space-y-3">
+        <label class="block">
+          <span class="text-sm font-medium">Body form</span>
+          <select id="selBody" class="field"></select>
+        </label>
+        <label class="block">
+          <span class="text-sm font-medium">Mouth position</span>
+          <select id="selMouth" class="field"></select>
+        </label>
+        <label class="block">
+          <span class="text-sm font-medium">Tail shape</span>
+          <select id="selTail" class="field"></select>
+        </label>
+        <label class="block">
+          <span class="text-sm font-medium">Gill rakers</span>
+          <select id="selRakers" class="field"></select>
+          <span id="feedingNote" class="mt-1 block text-sm text-ink/75"></span>
+        </label>
+        <div class="grid grid-cols-2 gap-3">
+          <label class="block">
+            <span class="text-sm font-medium">Estimated sex</span>
+            <select id="selSex" class="field"></select>
+          </label>
+          <label class="block">
+            <span class="text-sm font-medium">Age category</span>
+            <select id="selAge" class="field"></select>
+          </label>
+        </div>
+        <p id="sexAgeHint" class="text-sm text-ink/75"></p>
+      </div>
+    </section>
+
+    <!-- Teach -->
+    <section id="teachCard" hidden aria-labelledby="teachTitle" class="mt-4 rounded-lg bg-white p-4 shadow-sm">
+      <h2 id="teachTitle" class="font-serif text-xl font-semibold">Confirm or correct the species</h2>
+      <p class="mt-1 text-sm text-ink/75">Each fish you save makes the next match better. Save a correct match too: it strengthens that species.</p>
+
+      <label class="mt-3 block">
+        <span class="text-sm font-medium">Species</span>
+        <input id="speciesInput" list="speciesList" type="text" autocomplete="off" autocapitalize="off" spellcheck="false"
+          placeholder="Common name (Scientific name)" class="field">
+        <datalist id="speciesList"></datalist>
+      </label>
+
+      <button id="btnSave" type="button"
+        class="mt-3 w-full rounded-lg bg-gold px-4 py-3.5 text-base font-semibold text-ink active:brightness-90 disabled:opacity-50">
+        Save to training set
+      </button>
+    </section>
+
+    <!-- Knowledge base -->
+    <section aria-labelledby="kbTitle" class="mt-4 rounded-lg bg-white p-4 shadow-sm">
+      <h2 id="kbTitle" class="font-serif text-xl font-semibold">What Identica has learned</h2>
+      <p id="kbSummary" class="mt-1 text-sm text-ink/75"></p>
+      <ul id="kbList" class="mt-2 space-y-1 text-sm"></ul>
+
+      <div class="mt-3 grid grid-cols-2 gap-3">
+        <button id="btnExport" type="button" class="rounded-lg border border-lagoon px-3 py-2.5 text-sm font-semibold text-lagoon">Export data</button>
+        <button id="btnImport" type="button" class="rounded-lg border border-lagoon px-3 py-2.5 text-sm font-semibold text-lagoon">Import data</button>
+        <input id="inputImport" type="file" accept="application/json,.json" class="sr-only">
+      </div>
+      <button id="btnClear" type="button" class="mt-3 w-full rounded-lg border border-laterite px-3 py-2.5 text-sm font-semibold text-laterite">Delete all learned data</button>
+      <p class="mt-3 text-xs text-ink/65">Learned data stays on this device. Export it regularly: clearing browser data removes it.</p>
+    </section>
+
+    <footer class="mt-6 text-center text-xs text-ink/60">
+      Suggestions are a field aid. Confirm identifications against a key before recording them.
+    </footer>
+  </div>
+
+  <div id="toast" role="alert" class="pointer-events-none fixed inset-x-4 bottom-6 mx-auto hidden max-w-sm rounded-lg bg-ink px-4 py-3 text-center text-sm font-medium text-white shadow-lg"></div>
+
+  <!-- TensorFlow.js + MobileNet (pinned versions) -->
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.22.0/dist/tf.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/mobilenet@2.1.1/dist/mobilenet.min.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
