@@ -1,0 +1,56 @@
+{
+  "version": 1,
+  "note": "Starter reference data written from general knowledge. Check each entry against FishBase or a Ghanaian fish key before relying on it, and replace age notes with local size-at-maturity values.",
+  "species": [
+    {
+      "common_name": "Nile tilapia",
+      "scientific_name": "Oreochromis niloticus",
+      "body_form": "Laterally compressed",
+      "mouth_position": "Terminal",
+      "tail_shape": "Rounded",
+      "gill_rakers": "intermediate",
+      "sex_markers": "Look at the urogenital area behind the anus. Males have a single urogenital opening on a pointed papilla; females have a separate, slit-like genital pore and urinary pore. Breeding males often show reddish edges on the dorsal and tail fins. A female carrying eggs has a swollen mouth and throat.",
+      "age_markers": "Juveniles are small with faint tail bars and a proportionally large head and eye. Sub-adults have adult colour but no developed gonads when opened. Adults are mature when gonads are developed. Size at maturity varies by water body and culture system, so use your local value."
+    },
+    {
+      "common_name": "African catfish",
+      "scientific_name": "Clarias gariepinus",
+      "body_form": "Elongate",
+      "mouth_position": "Terminal",
+      "tail_shape": "Rounded",
+      "gill_rakers": "intermediate",
+      "sex_markers": "Look at the genital papilla just behind the anus. Males have a long, pointed papilla; females have a shorter, blunt papilla with a visible slit. Ripe females have a swollen, soft belly.",
+      "age_markers": "Juveniles have a marbled or mottled pattern and a relatively large head. Adults are darker, olive to grey-black, with a broad bony head. Sub-adults sit between the two and have undeveloped gonads when opened. Use total length against your local size at maturity."
+    },
+    {
+      "common_name": "Black-chinned tilapia",
+      "scientific_name": "Sarotherodon melanotheron",
+      "body_form": "Laterally compressed",
+      "mouth_position": "Terminal",
+      "tail_shape": "Rounded",
+      "gill_rakers": "long-fine",
+      "sex_markers": "Check the urogenital papilla: pointed in males, with a slit-like pore in females. This species is a mouthbrooder and the male commonly carries the eggs and young, so a swollen throat on a fish with eggs or fry in the mouth often points to a male. The dark chin pigment is stronger in breeding fish.",
+      "age_markers": "Juveniles are pale with a weak chin mark. Adults show the dark chin and throat clearly. Sub-adults have adult shape but small, undeveloped gonads when opened. Size at maturity differs between lagoons, so use a local value."
+    },
+    {
+      "common_name": "Heterotis",
+      "scientific_name": "Heterotis niloticus",
+      "body_form": "Elongate",
+      "mouth_position": "Terminal",
+      "tail_shape": "Rounded",
+      "gill_rakers": "long-fine",
+      "sex_markers": "Males and females are hard to tell apart from the outside. Confirm by examining the gonads, and treat any breeding-season colour or fin change as a clue only.",
+      "age_markers": "Juveniles are small and slender with a bold dark pattern. Adults are large, grey to brown, with a heavier body. Use total length and gonad condition together, and replace this note with a local size at maturity."
+    },
+    {
+      "common_name": "Atlantic chub mackerel",
+      "scientific_name": "Scomber colias",
+      "body_form": "Fusiform",
+      "mouth_position": "Terminal",
+      "tail_shape": "Forked",
+      "gill_rakers": "long-fine",
+      "sex_markers": "Sexes look the same from the outside. Open the fish and check the gonads: ovaries are granular and yellow to orange, testes are smooth and whitish.",
+      "age_markers": "Juveniles are small with a bright, strongly marked back. Adults are larger with a more muted pattern and developed gonads in season. Exact age needs otolith reading, so record length and gonad stage instead. Note that market 'mackerel' in Ghana can also mean horse mackerel (Trachurus), so check which species you have."
+    }
+  ]
+}
